@@ -4,35 +4,19 @@ import './css/styles.css';
 
 // Business Logic
 
-function getWeather(city) {
-  let promise = new Promise(function(resolve,reject){
-    let request = new XMLHttpRequest();
-    const url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${process.env.API_KEY}&units=imperial`;
-
-    request.addEventListener("loadend", function() {
-      const response = JSON.parse(this.responseText);
-      if (this.status === 200) {
-        resolve([response, city]);
-      } else {
-        reject([this, response, city]);
-      }
-    });
-    request.open("GET", url, true);
-    request.send();
+function getWeather(city){
+  let promise = WeatherService.getWeather(city);
+  promise.then(function(weatherDataArray){
+    printElements(weatherDataArray);
+  }, function(errorArray){
+    printError(errorArray);
   });
-  
-  promise.then(function(response){
-    printElements(response);
-  }, function(errorMessage){
-    printError(errorMessage);
-  });
-
 }
 
 // UI Logic
 
-function printElements(results) {
-  document.querySelector('#showResponse').innerText = `The humidity in ${results[1]} is ${results[0].main.humidity}%.
+function printElements(data) {
+  document.querySelector('#showResponse').innerText = `The humidity in ${data[1]} is ${data[0].main.humidity}%.
   The temperature in Kelvins is ${results[0].main.temp} degrees.`;
 }
 
